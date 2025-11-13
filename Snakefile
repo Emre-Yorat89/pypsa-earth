@@ -2171,6 +2171,9 @@ if config["foresight"] == "myopic":
                 **config["export"],
             ),
 
+if config["enable"].get("run_distribution", True):
+    # put rules of pypsa-distribution and run
+    rule
 
 rule run_scenario:
     input:
