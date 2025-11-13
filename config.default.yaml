@@ -25,6 +25,7 @@ enable:
   download_osm_data: true # If 'true', OpenStreetMap data will be downloaded for the above given countries
   build_natura_raster: false # If 'true', then an exclusion raster will be build. Otherwise use pregenerated raster.
   build_cutout: false
+  run_distribution: false # If true, pypsa-distribution related scripts will be run.
   # If "build_cutout" : true, then environmental data is extracted according to `snapshots` date range and `countries`
   # requires cds API key https://cds.climate.copernicus.eu/api-how-to
   # More information https://atlite.readthedocs.io/en/latest/introduction.html#datasets
@@ -41,7 +42,8 @@ run:
   shared_cutouts: true # set to true to share the default cutout(s) across runs
   # Note: value false requires build_cutout to be enabled
   allow_scenario_failure: false # If True, the workflow will continue even if a scenario in run_scnenario fails
-
+  distribution_dir: "dist" #The file where the distribution networks and the results will be stored.
+  
 scenario:
   simpl: [""]
   ll: ["copt"]
