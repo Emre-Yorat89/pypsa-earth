@@ -33,6 +33,7 @@ HTTP = HTTPRemoteProvider()
 
 copy_default_files()
 
+PYPSADISTRIBUTION_FOLDER = "pypsa-distribution"
 
 configfile: "config.default.yaml"
 configfile: "configs/bundle_config.yaml"
@@ -88,6 +89,20 @@ if config["custom_rules"] is not []:
 
         include: rule
 
+if not config.get("disable_subworkflow", False):
+
+    subworkflow pypsadistribution:
+        workdir:
+            PYPSADISTRIBUTION_FOLDER
+        snakefile:
+            PYPSADISTRIBUTION_FOLDER + "/Snakefile"
+        configfile:
+            "./pypsa-distribution/config.pypsa-distribution.yaml"
+
+if config.get("disable_subworkflow", False):
+
+    def pypsadistribution(path):
+        return PYPSADISTRIBUTION_FOLDER + "/" + path
 
 rule clean:
     run:
