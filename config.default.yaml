@@ -9,6 +9,9 @@ logging:
   level: INFO
   format: "%(levelname)s:%(name)s:%(message)s"
 
+# option to disable the subworkflow to ease the analyses
+disable_subworkflow: false
+
 results_dir: results/
 summary_dir: results/
 
