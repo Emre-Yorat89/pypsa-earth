@@ -60,6 +60,7 @@ CDIR = RDIR if not run.get("shared_cutouts") else ""
 SECDIR = run["sector_name"] + "/" if run.get("sector_name") else ""
 SDIR = config["summary_dir"].strip("/") + f"/{SECDIR}"
 RESDIR = config["results_dir"].strip("/") + f"/{SECDIR}"
+DISTDIR = run["distribution_dir"] + "/" if run.get("sector_name") else ""
 
 load_data_paths = get_load_paths_gegis("data", config)
 
