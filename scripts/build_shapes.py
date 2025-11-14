@@ -33,6 +33,7 @@ from numba.typed import Dict
 from rasterio.mask import mask
 from rasterio.windows import Window
 from shapely.geometry import MultiPolygon
+from shapely.geometry import Polygon
 from shapely.ops import unary_union
 from shapely.validation import make_valid
 from tqdm import tqdm
