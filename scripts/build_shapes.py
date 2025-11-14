@@ -1544,7 +1544,7 @@ if __name__ == "__main__":
     save_to_geojson(subregion_shapes, out.subregion_shapes)
 
     if config["enable"]["run_distribution"] == True:
-            create_microgrid_shapes(
+        create_microgrid_shapes(
         snakemake.config["microgrids_list"],
         snakemake.output["microgrid_shapes"],
     )
