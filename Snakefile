@@ -2173,19 +2173,8 @@ if config["foresight"] == "myopic":
 
 if config["enable"].get("run_distribution", True):
     # put rules of pypsa-distribution and run
-    rule build_shapes:
-        output:
-            microgrid_shapes="resources/shapes/microgrid_shapes.geojson",
-            microgrid_bus_shapes="resources/shapes/microgrid_bus_shapes.geojson",
-        log:
-            "logs/build_shapes.log",
-        benchmark:
-            "benchmarks/build_shapes"
-        threads: 1
-        resources:
-            mem_mb=3000,
-        script:
-            "scripts/build_shapes.py"
+#    rule build_shapes:
+
 
 rule run_scenario:
     input:
