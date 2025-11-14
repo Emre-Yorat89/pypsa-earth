@@ -245,6 +245,7 @@ rule build_osm_network:
 
 rule build_shapes:
     params:
+        pypsa_distribution_shape = config["enable"]
         build_shape_options=config["build_shape_options"],
         crs=config["crs"],
         countries=config["countries"],
