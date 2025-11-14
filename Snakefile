@@ -263,6 +263,8 @@ rule build_shapes:
         africa_shape="resources/" + RDIR + "shapes/africa_shape.geojson",
         gadm_shapes="resources/" + RDIR + "shapes/gadm_shapes.geojson",
         subregion_shapes="resources/" + RDIR + "shapes/subregion_shapes.geojson",
+        microgrid_shapes="resources/shapes/microgrid_shapes.geojson",
+        microgrid_bus_shapes="resources/shapes/microgrid_bus_shapes.geojson",
     log:
         "logs/" + RDIR + "build_shapes.log",
     benchmark:
