@@ -2172,7 +2172,7 @@ if config["foresight"] == "myopic":
                 **config["export"],
             ),
 
-if config["enable"].get("run_distribution", True):
+#if config["enable"].get("run_distribution", True):
     # put rules of pypsa-distribution and run
 #    rule build_shapes:
 
