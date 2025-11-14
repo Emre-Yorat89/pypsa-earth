@@ -1542,8 +1542,7 @@ if __name__ == "__main__":
         subregion_shapes = pd.DataFrame()
 
     save_to_geojson(subregion_shapes, out.subregion_shapes)
-
-    if config["enable"]["run_distribution"] == True:
+    if snakemake.params.pypsa_distribution_shape["run_distribution"]:
         create_microgrid_shapes(
         snakemake.config["microgrids_list"],
         snakemake.output["microgrid_shapes"],
