@@ -175,6 +175,7 @@ if config["enable"].get("download_osm_data", True):
             generators_csv="resources/" + RDIR + "osm/raw/all_raw_generators.csv",
             lines="resources/" + RDIR + "osm/raw/all_raw_lines.geojson",
             substations="resources/" + RDIR + "osm/raw/all_raw_substations.geojson",
+            building_resources="resources/" + RDIR + "osm/raw/all_raw_buildings.geojson",
         log:
             "logs/" + RDIR + "download_osm_data.log",
         benchmark:
