@@ -26,6 +26,7 @@ enable:
   build_natura_raster: false # If 'true', then an exclusion raster will be build. Otherwise use pregenerated raster.
   build_cutout: false
   run_distribution: false # If true, pypsa-distribution related scripts will be run.
+  download_osm_method: overpass # if run_distribution 
   # If "build_cutout" : true, then environmental data is extracted according to `snapshots` date range and `countries`
   # requires cds API key https://cds.climate.copernicus.eu/api-how-to
   # More information https://atlite.readthedocs.io/en/latest/introduction.html#datasets
