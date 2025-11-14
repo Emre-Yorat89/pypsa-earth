@@ -828,6 +828,12 @@ solving:
 
   mem: 30000 #memory in MB; 20 GB enough for 50+B+I+H2; 100 GB for 181+B+I+H2
 
+microgrids_list:  # MICROGRIDS IN NIGERIA
+  microgrid_1:
+    lon_max: 7.3914
+    lon_min: 7.2616
+    lat_min: 4.6151
+    lat_max: 4.7208
 
 plotting:
   map:
