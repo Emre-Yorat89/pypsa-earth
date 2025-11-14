@@ -1545,12 +1545,12 @@ if __name__ == "__main__":
     if snakemake.params.pypsa_distribution_shape == True:
         create_microgrid_shapes(
         snakemake.config["microgrids_list"],
-        snakemake.output["microgrid_shapes"],
+        out.microgrid_shapes,
     )
 
         create_bus_regions(
         snakemake.config["microgrids_list"],
-        snakemake.output["microgrid_bus_shapes"],
+        out.microgrid_bus_shapes,
     )
         
     
