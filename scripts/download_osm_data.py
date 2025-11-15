@@ -244,7 +244,7 @@ if __name__ == "__main__":
             else:
                 logger.info(f"Move {old_files[0]} to {new_file_name}")
                 shutil.move(old_files[0], new_file_name)
-    if snakemake.config["enable"]["download_osm_method"] == "overpass" and :
+    if snakemake.config["enable"]["download_osm_method"] == "overpass" and snakemake.params.run_distribution == True:
         microgrids_list = snakemake.config["microgrids_list"]
         features = "building"
         overpass_url = "https://overpass-api.de/api/interpreter"
