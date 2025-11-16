@@ -27,11 +27,13 @@ Outputs
 - ``resources/osm/raw``: Prepared and per type (e.g. cable/lines) aggregated power data as .geojson and .csv files
 """
 import os
+import json
 import shutil
 from pathlib import Path
 
 from _helpers import BASE_DIR, configure_logging, create_logger, read_osm_config
 from earth_osm import eo
+import requests
 
 logger = create_logger(__name__)
 
