@@ -197,11 +197,14 @@ rule clean_osm_data:
         country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
         offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
         africa_shape="resources/" + RDIR + "shapes/africa_shape.geojson",
+        all_buildings="resources/" + RDIR + "osm/raw/all_raw_buildings.geojson",
+        microgrid_shapes="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
     output:
         generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
         generators_csv="resources/" + RDIR + "osm/clean/all_clean_generators.csv",
         lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
         substations="resources/" + RDIR + "osm/clean/all_clean_substations.geojson",
+        microgrid_building="resources/" + RDIR + "buildings/microgrid_building.geojson",
     log:
         "logs/" + RDIR + "clean_osm_data.log",
     benchmark:
