@@ -1186,8 +1186,9 @@ if __name__ == "__main__":
         generator_name_method=generator_name_method,
     )
 
-    extract_points(
-        snakemake.input["microgrid_shapes"],
-        snakemake.input["all_buildings"],
-        snakemake.output["microgrid_building"],
-    )
+    if snakemake.params.run_distribution == True:
+        extract_points(
+            snakemake.input["microgrid_shapes"],
+            snakemake.input["all_buildings"],
+            snakemake.output["microgrid_building"],
+        )
