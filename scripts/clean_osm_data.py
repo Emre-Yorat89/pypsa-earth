@@ -1185,3 +1185,9 @@ if __name__ == "__main__":
         add_line_endings=add_line_endings,
         generator_name_method=generator_name_method,
     )
+
+    extract_points(
+        snakemake.input["microgrid_shapes"],
+        snakemake.input["all_buildings"],
+        snakemake.output["microgrid_building"],
+    )
