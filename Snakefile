@@ -189,6 +189,7 @@ rule clean_osm_data:
     params:
         crs=config["crs"],
         clean_osm_data_options=config["clean_osm_data_options"],
+        run_distribution=config["enable"]["run_distribution"],
     input:
         cables="resources/" + RDIR + "osm/raw/all_raw_cables.geojson",
         generators="resources/" + RDIR + "osm/raw/all_raw_generators.geojson",
