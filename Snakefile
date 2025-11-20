@@ -219,11 +219,13 @@ rule build_osm_network:
         build_osm_network=config.get("build_osm_network", {}),
         countries=config["countries"],
         crs=config["crs"],
+        house_area_limit=config["house_area_limit"],
     input:
         generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
         lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
         substations="resources/" + RDIR + "osm/clean/all_clean_substations.geojson",
         country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
+        microgrid_building="resources/" + RDIR + "buildings/microgrid_building.geojson",
     output:
         lines="resources/" + RDIR + "base_network/all_lines_build_network.csv",
         converters="resources/" + RDIR + "base_network/all_converters_build_network.csv",
@@ -241,6 +243,9 @@ rule build_osm_network:
         substations_geo="resources/"
         + RDIR
         + "base_network/all_buses_build_network.geojson",
+        clusters="resources/buildings/clustered_buildings.geojson",
+        clusters_with_buildings="resources/buildings/cluster_with_buildings.geojson",
+        buildings_type="resources/buildings/buildings_type.csv",
     log:
         "logs/" + RDIR + "build_osm_network.log",
     benchmark:
