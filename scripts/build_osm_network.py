@@ -21,7 +21,7 @@ from _helpers import (
 from scipy.spatial import cKDTree
 from shapely.geometry import LineString, MultiLineString, Point
 from shapely.ops import linemerge, nearest_points, split
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN, KMeans
 from tqdm import tqdm
 
 logger = create_logger(__name__)
