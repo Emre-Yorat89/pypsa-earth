@@ -225,7 +225,7 @@ rule build_osm_network:
         lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
         substations="resources/" + RDIR + "osm/clean/all_clean_substations.geojson",
         country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
-        microgrid_building="resources/" + RDIR + "buildings/microgrid_building.geojson",
+        buildings_geojson="resources/" + RDIR + "buildings/microgrid_building.geojson",
     output:
         lines="resources/" + RDIR + "base_network/all_lines_build_network.csv",
         converters="resources/" + RDIR + "base_network/all_converters_build_network.csv",
