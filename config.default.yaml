@@ -839,7 +839,10 @@ microgrids_list:  # MICROGRIDS IN NIGERIA
     lat_min: 4.6151
     lat_max: 4.7208
 
-
+buildings:
+  n_clusters: 10 # either specify a number (n_clusters: 10) or specify the number of clusters by microgrid as in the following
+#   microgrid_1: 3
+#   microgrid_2: 13
 plotting:
   map:
     figsize: [7, 7]
