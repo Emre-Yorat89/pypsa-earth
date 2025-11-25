@@ -491,6 +491,7 @@ rule build_demand_profiles:
 
     output:
         "resources/" + RDIR + "demand_profiles.csv",
+        electric_load="resources/demand/microgrid_load.csv",
     log:
         "logs/" + RDIR + "build_demand_profiles.log",
     benchmark:
