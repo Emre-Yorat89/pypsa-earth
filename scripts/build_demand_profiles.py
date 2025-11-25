@@ -722,3 +722,10 @@ if __name__ == "__main__":
         end_date,
         out_path,
     )
+    
+    sample_profile = snakemake.input["sample_profile"]
+    tier_percent = snakemake.params.tier["tier_percent"]
+    inclusive = snakemake.params.snapshots["inclusive"]
+    microgrids_list = snakemake.config["microgrids_list"]
+    build_demand_model = snakemake.params.build_demand_model["type"]
+    std = snakemake.params.build_demand_model["std"]
