@@ -469,6 +469,8 @@ rule build_demand_profiles:
         snapshots=config["snapshots"],
         load_options=config["load_options"],
         countries=config["countries"],
+        tier=config["tier"],
+        build_demand_model=config["build_demand_type"],
     input:
         base_network="networks/" + RDIR + "base.nc",
         regions="resources/" + RDIR + "bus_regions/regions_onshore.geojson",
@@ -478,6 +480,15 @@ rule build_demand_profiles:
         #To use: downlaod file from the google drive and place it in resources/" + RDIR + "shapes/
         #Link: https://drive.google.com/drive/u/1/folders/1dkW1wKBWvSY4i-XEuQFFBj242p0VdUlM
         gadm_shapes="resources/" + RDIR + "shapes/gadm_shapes.geojson",
+        **{
+            f"profile_{user_file.stem}": f"resources/ramp/daily_type_demand_{user_file.stem}.xlsx"
+            for user_file in Path("data/ramp/").glob("[a-zA-Z0-9]*.xlsx")
+        },
+        sample_profile = "data/ramp/sample_profile.csv",
+        building_csv="resources/buildings/buildings_type.csv",
+        microgrid_shapes="resources/shapes/microgrid_shapes.geojson",
+        clusters_with_buildings="resources/buildings/cluster_with_buildings.geojson",
+
     output:
         "resources/" + RDIR + "demand_profiles.csv",
     log:
