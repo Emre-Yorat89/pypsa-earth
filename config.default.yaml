@@ -832,6 +832,23 @@ solving:
 house_area_limit:
   area_limit: 255  # All buildings without a specified tag, having an area less than house_limit will be considered houses
   
+ramp:
+  days: 365  # Days allows to select the number of simulated days to ramp
+
+tier:
+  tier_percent: [0.3, 0.2, 0.2, 0.1, 0.15, 0.05]
+  # Tier allows selection of the percentage breakdown of the population into
+  # the different tiers of energy access. Values range from the percentage of
+  # population belonging to tier 0 to those belonging to tier 5.
+
+build_demand_type:
+  type: "From_file"
+  std: "on"
+# type allows to select the mode by which the microgrid demand profile is generated.
+# From_file = a predetermined hourly profile is used
+# Ramp = an average hourly profile is calculated by exploiting the ramp tool when std on also the
+#     standard deviation is calculated and used to calculate demand.
+  
 microgrids_list:  # MICROGRIDS IN NIGERIA
   microgrid_1:
     lon_max: 7.3914
