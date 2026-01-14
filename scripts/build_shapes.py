@@ -60,6 +60,7 @@ def get_GADM_filename(country_code):
         "UM": "UMI",  # united states minor outlying islands
         "SJ": "SJM",  # svalbard
         "CX": "CXR",  # Christmas island
+        "CY": "ZNC",  # Northern Cyprus of Turkish Republic
     }
 
     if country_code in special_codes_GADM:
