@@ -32,6 +32,7 @@ enable:
   # More information https://atlite.readthedocs.io/en/latest/introduction.html#datasets
   progress_bar: true # show progress bar during downloading routines and other long-running tasks
   custom_busmap: false # if true, use "data/custom_busmap_elec_s{simpl}_{clusters}.csv" for the clustering instead of the clustering algorithms
+  run_distribution: false # if true, a pypsa-distribution simulation will start. Check also snakemake command to run pypsa-distribution.
 
 
 
