@@ -202,3 +202,10 @@ csp-tower TES,2030,lifetime,30,years,see solar-tower.,,
 csp-tower power block,2030,FOM,1.1,%/year,see solar-tower.,,2013
 csp-tower power block,2030,investment,759.17,EUR/kW_e,ATB CSP data (https://atb.nrel.gov/electricity/2021/concentrating_solar_power) and NREL SAM v2021.12.2 (https://sam.nrel.gov/).,,2013
 csp-tower power block,2030,lifetime,30,years,see solar-tower.,,
+diesel,2030,investment,400,EUR/kWel,DIW,,
+diesel,2030,efficiency,0.30,per unit,DIW,,
+diesel,2030,VOM,0.5,EUR/MWhel,DIW,,
+diesel,2030,fuel,100,USD/MWhth,DIW,,
+MVAC overhead,2030,investment,40,EUR/MW/km,,
+MVAC overhead,2030,lifetime,40,years,,
+MVAC overhead,2030,FOM,2,%/year,,

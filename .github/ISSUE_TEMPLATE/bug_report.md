@@ -10,8 +10,8 @@ assignees: ''
 
 ## Checklist
 
-- [ ] I am using the current [`main`](https://github.com/pypsa-meets-earth/pypsa-earth/tree/main) branch or the latest [release](https://github.com/pypsa-meets-earth/pypsa-earth/releases). Please indicate.
-- [ ] I am running on an up-to-date [`pypsa-earth` environment](https://github.com/pypsa-meets-earth/pypsa-earth/blob/main/envs/environment.yaml). Update via `conda env update -f envs/environment.yaml`.
+- [ ] I am using the current [`main`](https://github.com/pypsa-meets-earth/pypsa-distribution/tree/main) branch or the latest [release](https://github.com/pypsa-meets-earth/pypsa-distribution/releases). Please indicate.
+- [ ] I am running on an up-to-date [`pypsa-earth` environment](https://github.com/pypsa-meets-earth/pypsa-earth/blob/main/envs/environment.yaml). Update via `conda env update -f pypsa-earth/envs/environment.yaml`.
 
 ## Describe the Bug
 

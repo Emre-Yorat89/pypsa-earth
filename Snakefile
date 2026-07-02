@@ -39,6 +39,8 @@ copy_default_files()
 configfile: "config.default.yaml"
 configfile: "configs/bundle_config.yaml"
 configfile: "configs/powerplantmatching_config.yaml"
+#configfile: "configs/config.pypsa-earth.yaml"
+configfile: "configs/config.distribution.yaml"
 configfile: "config.yaml"
 
 
@@ -68,6 +70,7 @@ RESDIR = config["results_dir"].strip("/") + f"/{SECDIR}"
 
 ATLITE_NPROCESSES = config["atlite"].get("nprocesses", 4)
 
+PROFILE = "data/sample_profile.csv"
 
 wildcard_constraints:
     simpl="[a-zA-Z0-9]*|all",
@@ -80,6 +83,7 @@ wildcard_constraints:
     demand=r"[-+a-zA-Z0-9\.\s]*",
     h2export=r"[0-9]+(\.[0-9]+)?",
     planning_horizons="20[2-9][0-9]|2100",
+    user_type="[a-zA-Z0-9]*",
 
 
 if config["custom_rules"] is not []:
@@ -2355,3 +2359,13 @@ rule run_all_scenarios:
                 for c in Path("configs/scenarios").glob("config.*.yaml")
             ],
         ),
+
+if not config["enable"].get("disable_distribution_workflow"):
+
+    include: "rules/pypsa_distribution.smk"
+
+
+# rule clean:
+#     run:
+#         shell("snakemake -j 1 solve_network --delete-all-output")
+
