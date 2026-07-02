@@ -1,3 +1,5 @@
+COSTS = "data/costs.csv"
+
 rule dist_ramp_build_demand_profile:
     params:
         ramp=config["ramp"],
