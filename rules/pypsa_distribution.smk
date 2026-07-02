@@ -15,7 +15,7 @@ rule dist_ramp_build_demand_profile:
     resources:
         mem_mb=3000,
     script:
-        "../scripts/dist_ramp_build_demand_profile.py"
+        "scripts/dist_ramp_build_demand_profile.py"
 
 
 rule dist_build_demand:
@@ -42,7 +42,7 @@ rule dist_build_demand:
     resources:
         mem_mb=3000,
     script:
-        "../scripts/dist_build_demand.py"
+        "scripts/dist_build_demand.py"
 
 
 rule dist_build_shapes:
@@ -59,7 +59,7 @@ rule dist_build_shapes:
     resources:
         mem_mb=3000,
     script:
-        "../scripts/dist_build_shapes.py"
+        "scripts/dist_build_shapes.py"
 
 
 if config.get("mode") != "brown_field":
@@ -82,7 +82,7 @@ if config.get("mode") != "brown_field":
         resources:
             mem_mb=3000,
         script:
-            "../scripts/dist_cluster_buildings.py"
+            "scripts/dist_cluster_buildings.py"
 
     rule dist_create_network:
         input:
@@ -98,7 +98,7 @@ if config.get("mode") != "brown_field":
         resources:
             mem_mb=3000,
         script:
-            "../scripts/dist_create_network.py"
+            "scripts/dist_create_network.py"
 
 
 if config["enable"].get("download_osm_buildings", True):
@@ -125,7 +125,7 @@ if config["enable"].get("download_osm_buildings", True):
         resources:
             mem_mb=3000,
         script:
-            "../scripts/dist_download_osm_data.py"
+            "scripts/dist_download_osm_data.py"
 
 
 rule dist_clean_earth_osm_data:
@@ -142,7 +142,7 @@ rule dist_clean_earth_osm_data:
     resources:
         mem_mb=3000,
     script:
-        "../scripts/dist_clean_earth_osm_data.py"
+        "scripts/dist_clean_earth_osm_data.py"
 
 
 if config.get("mode") == "brown_field":
@@ -157,8 +157,8 @@ if config.get("mode") == "brown_field":
             lines="resources/" + RDIR + "osm/raw/all_raw_lines.geojson",
             substations="resources/" + RDIR + "osm/raw/all_raw_substations.geojson",
             country_shapes="resources/shapes/microgrid_shapes.geojson",
-            offshore_shapes=pypsaearth("resources/shapes/offshore_shapes.geojson"),
-            africa_shape=pypsaearth("resources/shapes/africa_shape.geojson"),
+            offshore_shapes="resources/shapes/offshore_shapes.geojson",
+            africa_shape="resources/shapes/africa_shape.geojson",
         output:
             generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
             generators_csv="resources/" + RDIR + "osm/clean/all_clean_generators.csv",
@@ -169,7 +169,7 @@ if config.get("mode") == "brown_field":
         benchmark:
             "benchmarks/" + RDIR + "clean_osm_data"
         script:
-            pypsaearth("scripts/clean_osm_data.py")
+            "scripts/clean_osm_data.py"
 
     rule dist_build_osm_network:
         params:
@@ -195,7 +195,7 @@ if config.get("mode") == "brown_field":
         benchmark:
             "benchmarks/" + RDIR + "dist_build_osm_network"
         script:
-            "../scripts/dist_build_osm_network.py"
+            "scripts/dist_build_osm_network.py"
 
     rule dist_cluster_buildings:
         params:
@@ -219,7 +219,7 @@ if config.get("mode") == "brown_field":
         resources:
             mem_mb=3000,
         script:
-            "../scripts/dist_cluster_buildings.py"
+            "scripts/dist_cluster_buildings.py"
 
     rule dist_base_network:
         params:
@@ -241,7 +241,7 @@ if config.get("mode") == "brown_field":
             + RDIR
             + "base_network/all_transformers_build_network.csv",
             country_shapes="resources/shapes/microgrid_shapes.geojson",
-            offshore_shapes=pypsaearth("resources/shapes/offshore_shapes.geojson"),
+            offshore_shapes="resources/shapes/offshore_shapes.geojson",
         output:
             "networks/" + RDIR + "base.nc",
         log:
@@ -252,7 +252,7 @@ if config.get("mode") == "brown_field":
         resources:
             mem_mb=500,
         script:
-            pypsaearth("scripts/base_network.py")
+            "scripts/base_network.py"
 
     rule dist_build_bus_regions:
         params:
@@ -261,13 +261,13 @@ if config.get("mode") == "brown_field":
             countries=config["countries"],
         input:
             country_shapes="resources/shapes/microgrid_shapes.geojson",
-            offshore_shapes=pypsaearth("resources/shapes/offshore_shapes.geojson"),
+            offshore_shapes="resources/shapes/offshore_shapes.geojson",
             base_network="networks/" + RDIR + "base.nc",
             #gadm_shapes="resources/" + RDIR + "shapes/MAR2.geojson",
             #using this line instead of the following will test updated gadm shapes for MA.
             #To use: downlaod file from the google drive and place it in resources/" + RDIR + "shapes/
             #Link: https://drive.google.com/drive/u/1/folders/1dkW1wKBWvSY4i-XEuQFFBj242p0VdUlM
-            gadm_shapes=pypsaearth("resources/" + RDIR + "shapes/gadm_shapes.geojson"),
+            gadm_shapes="resources/" + RDIR + "shapes/gadm_shapes.geojson",
         output:
             regions_onshore="resources/" + RDIR + "bus_regions/regions_onshore.geojson",
             regions_offshore="resources/"
@@ -281,7 +281,7 @@ if config.get("mode") == "brown_field":
         resources:
             mem_mb=1000,
         script:
-            pypsaearth("scripts/build_bus_regions.py")
+            "scripts/build_bus_regions.py"
 
     rule dist_filter_data:
         input:
@@ -302,7 +302,7 @@ if config.get("mode") == "brown_field":
         resources:
             mem_mb=500,
         script:
-            "../scripts/dist_filter_data.py"
+            "scripts/dist_filter_data.py"
 
 
 rule dist_build_renewable_profiles:
@@ -312,13 +312,13 @@ rule dist_build_renewable_profiles:
         countries=config["countries"],
         alternative_clustering=config["cluster_options"]["alternative_clustering"],
     input:
-        natura=pypsaearth("resources/natura.tiff"),
-        copernicus=pypsaearth(
+        natura="resources/natura.tiff",
+        copernicus=
             "data/copernicus/PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
-        ),
-        gebco=pypsaearth("data/gebco/GEBCO_2025_sub_ice.nc"),
+        ,
+        gebco="data/gebco/GEBCO_2025_sub_ice.nc",
         country_shapes="resources/shapes/microgrid_shapes.geojson",
-        offshore_shapes=pypsaearth("resources/shapes/offshore_shapes.geojson"),
+        offshore_shapes="resources/shapes/offshore_shapes.geojson",
         hydro_capacities="pypsa-earth/data/hydro_capacities.csv",
         eia_hydro_generation="pypsa-earth/data/eia_hydro_annual_generation.csv",
         powerplants="resources/powerplants.csv",
@@ -333,9 +333,9 @@ rule dist_build_renewable_profiles:
             if config.get("mode") == "brown_field"
             else "resources/shapes/microgrid_bus_shapes.geojson"
         ),
-        cutout=lambda w: pypsaearth(
+        cutout=lambda w: 
             "cutouts/" + config["renewable"][w.technology]["cutout"] + ".nc"
-        ),
+        ,
     output:
         profile="resources/renewable_profiles/profile_{technology}.nc",
     log:
@@ -346,7 +346,7 @@ rule dist_build_renewable_profiles:
     resources:
         mem_mb=ATLITE_NPROCESSES * 5000,
     script:
-        pypsaearth("scripts/build_renewable_profiles.py")
+        "scripts/build_renewable_profiles.py"
 
 
 rule dist_add_electricity:
@@ -375,7 +375,7 @@ rule dist_add_electricity:
     resources:
         mem_mb=3000,
     script:
-        "../scripts/dist_add_electricity.py"
+        "scripts/dist_add_electricity.py"
 
 
 rule dist_solve_network:
@@ -391,4 +391,4 @@ rule dist_solve_network:
     resources:
         mem_mb=3000,
     script:
-        "../scripts/dist_solve_network.py"
+        "scripts/dist_solve_network.py"

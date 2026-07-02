@@ -179,7 +179,7 @@ if config["enable"].get("download_global_buildings", True):
             "scripts/download_global_buildings.py"
 
 
-if config["enable"].get("download_osm_data", True):
+if config["enable"].get("download_osm_data", True) and config["enable"].get("disable_distribution_workflow"):
 
     rule download_osm_data:
         params:
@@ -197,67 +197,68 @@ if config["enable"].get("download_osm_data", True):
         script:
             "scripts/download_osm_data.py"
 
+if config["enable"].get("disable_distribution_workflow"):
 
-rule clean_osm_data:
-    params:
-        crs=config["crs"],
-        clean_osm_data_options=config["clean_osm_data_options"],
-    input:
-        cables="resources/" + RDIR + "osm/raw/all_raw_cables.geojson",
-        generators="resources/" + RDIR + "osm/raw/all_raw_generators.geojson",
-        lines="resources/" + RDIR + "osm/raw/all_raw_lines.geojson",
-        substations="resources/" + RDIR + "osm/raw/all_raw_substations.geojson",
-        country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
-        offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
-        extended_country_shape="resources/"
-        + RDIR
-        + "shapes/extended_country_shape.geojson",
-    output:
-        generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
-        generators_csv="resources/" + RDIR + "osm/clean/all_clean_generators.csv",
-        lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
-        substations="resources/" + RDIR + "osm/clean/all_clean_substations.geojson",
-    log:
-        "logs/" + RDIR + "clean_osm_data.log",
-    benchmark:
-        "benchmarks/" + RDIR + "clean_osm_data"
-    script:
-        "scripts/clean_osm_data.py"
+    rule clean_osm_data:
+        params:
+            crs=config["crs"],
+            clean_osm_data_options=config["clean_osm_data_options"],
+        input:
+            cables="resources/" + RDIR + "osm/raw/all_raw_cables.geojson",
+            generators="resources/" + RDIR + "osm/raw/all_raw_generators.geojson",
+            lines="resources/" + RDIR + "osm/raw/all_raw_lines.geojson",
+            substations="resources/" + RDIR + "osm/raw/all_raw_substations.geojson",
+            country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
+            offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
+            extended_country_shape="resources/"
+            + RDIR
+            + "shapes/extended_country_shape.geojson",
+        output:
+            generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
+            generators_csv="resources/" + RDIR + "osm/clean/all_clean_generators.csv",
+            lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
+            substations="resources/" + RDIR + "osm/clean/all_clean_substations.geojson",
+        log:
+            "logs/" + RDIR + "clean_osm_data.log",
+        benchmark:
+            "benchmarks/" + RDIR + "clean_osm_data"
+        script:
+            "scripts/clean_osm_data.py"
 
 
-rule build_osm_network:
-    params:
-        build_osm_network=config.get("build_osm_network", {}),
-        countries=config["countries"],
-        crs=config["crs"],
-    input:
-        generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
-        lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
-        substations="resources/" + RDIR + "osm/clean/all_clean_substations.geojson",
-        country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
-    output:
-        lines="resources/" + RDIR + "base_network/all_lines_build_network.csv",
-        converters="resources/" + RDIR + "base_network/all_converters_build_network.csv",
-        transformers="resources/"
-        + RDIR
-        + "base_network/all_transformers_build_network.csv",
-        substations="resources/" + RDIR + "base_network/all_buses_build_network.csv",
-        lines_geo="resources/" + RDIR + "base_network/all_lines_build_network.geojson",
-        converters_geo="resources/"
-        + RDIR
-        + "base_network/all_converters_build_network.geojson",
-        transformers_geo="resources/"
-        + RDIR
-        + "base_network/all_transformers_build_network.geojson",
-        substations_geo="resources/"
-        + RDIR
-        + "base_network/all_buses_build_network.geojson",
-    log:
-        "logs/" + RDIR + "build_osm_network.log",
-    benchmark:
-        "benchmarks/" + RDIR + "build_osm_network"
-    script:
-        "scripts/build_osm_network.py"
+    rule build_osm_network:
+        params:
+            build_osm_network=config.get("build_osm_network", {}),
+            countries=config["countries"],
+            crs=config["crs"],
+        input:
+            generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
+            lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
+            substations="resources/" + RDIR + "osm/clean/all_clean_substations.geojson",
+            country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
+        output:
+            lines="resources/" + RDIR + "base_network/all_lines_build_network.csv",
+            converters="resources/" + RDIR + "base_network/all_converters_build_network.csv",
+            transformers="resources/"
+            + RDIR
+            + "base_network/all_transformers_build_network.csv",
+            substations="resources/" + RDIR + "base_network/all_buses_build_network.csv",
+            lines_geo="resources/" + RDIR + "base_network/all_lines_build_network.geojson",
+            converters_geo="resources/"
+            + RDIR
+            + "base_network/all_converters_build_network.geojson",
+            transformers_geo="resources/"
+            + RDIR
+            + "base_network/all_transformers_build_network.geojson",
+            substations_geo="resources/"
+            + RDIR
+            + "base_network/all_buses_build_network.geojson",
+        log:
+            "logs/" + RDIR + "build_osm_network.log",
+        benchmark:
+            "benchmarks/" + RDIR + "build_osm_network"
+        script:
+            "scripts/build_osm_network.py"
 
 
 rule build_shapes:
@@ -322,68 +323,69 @@ def retrieve_subregion(script_name):
         "original_shapes": "resources/" + RDIR + "shapes/country_shapes.geojson",
     }
 
+if config["enable"].get("disable_distribution_workflow"):
 
-rule base_network:
-    params:
-        voltages=config["electricity"]["voltages"],
-        transformers=config["transformers"],
-        snapshots=config["snapshots"],
-        links=config["links"],
-        lines=config["lines"],
-        hvdc_as_lines=config["electricity"]["hvdc_as_lines"],
-        countries=config["countries"],
-        base_network=config["base_network"],
-    input:
-        osm_buses="resources/" + RDIR + "base_network/all_buses_build_network.csv",
-        osm_lines="resources/" + RDIR + "base_network/all_lines_build_network.csv",
-        osm_converters="resources/"
-        + RDIR
-        + "base_network/all_converters_build_network.csv",
-        osm_transformers="resources/"
-        + RDIR
-        + "base_network/all_transformers_build_network.csv",
-        country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
-        offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
-    output:
-        "networks/" + RDIR + "base.nc",
-    log:
-        "logs/" + RDIR + "base_network.log",
-    benchmark:
-        "benchmarks/" + RDIR + "base_network"
-    threads: 1
-    resources:
-        mem_mb=500,
-    script:
-        "scripts/base_network.py"
+    rule base_network:
+        params:
+            voltages=config["electricity"]["voltages"],
+            transformers=config["transformers"],
+            snapshots=config["snapshots"],
+            links=config["links"],
+            lines=config["lines"],
+            hvdc_as_lines=config["electricity"]["hvdc_as_lines"],
+            countries=config["countries"],
+            base_network=config["base_network"],
+        input:
+            osm_buses="resources/" + RDIR + "base_network/all_buses_build_network.csv",
+            osm_lines="resources/" + RDIR + "base_network/all_lines_build_network.csv",
+            osm_converters="resources/"
+            + RDIR
+            + "base_network/all_converters_build_network.csv",
+            osm_transformers="resources/"
+            + RDIR
+            + "base_network/all_transformers_build_network.csv",
+            country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
+            offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
+        output:
+            "networks/" + RDIR + "base.nc",
+        log:
+            "logs/" + RDIR + "base_network.log",
+        benchmark:
+            "benchmarks/" + RDIR + "base_network"
+        threads: 1
+        resources:
+            mem_mb=500,
+        script:
+            "scripts/base_network.py"
 
 
-rule build_bus_regions:
-    params:
-        alternative_clustering=config["cluster_options"]["alternative_clustering"],
-        crs=config["crs"],
-        countries=config["countries"],
-    input:
-        **retrieve_subregion("cluster_network"),
-        country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
-        offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
-        base_network="networks/" + RDIR + "base.nc",
-        #gadm_shapes="resources/" + RDIR + "shapes/MAR2.geojson",
-        #using this line instead of the following will test updated gadm shapes for MA.
-        #To use: downlaod file from the google drive and place it in resources/" + RDIR + "shapes/
-        #Link: https://drive.google.com/drive/u/1/folders/1dkW1wKBWvSY4i-XEuQFFBj242p0VdUlM
-        gadm_shapes="resources/" + RDIR + "shapes/gadm_shapes.geojson",
-    output:
-        regions_onshore="resources/" + RDIR + "bus_regions/regions_onshore.geojson",
-        regions_offshore="resources/" + RDIR + "bus_regions/regions_offshore.geojson",
-    log:
-        "logs/" + RDIR + "build_bus_regions.log",
-    benchmark:
-        "benchmarks/" + RDIR + "build_bus_regions"
-    threads: 1
-    resources:
-        mem_mb=1000,
-    script:
-        "scripts/build_bus_regions.py"
+    rule build_bus_regions:
+        params:
+            alternative_clustering=config["cluster_options"]["alternative_clustering"],
+            crs=config["crs"],
+            countries=config["countries"],
+        input:
+            **retrieve_subregion("cluster_network"),
+            country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
+            offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
+            base_network="networks/" + RDIR + "base.nc",
+            #gadm_shapes="resources/" + RDIR + "shapes/MAR2.geojson",
+            #using this line instead of the following will test updated gadm shapes for MA.
+            #To use: downlaod file from the google drive and place it in resources/" + RDIR + "shapes/
+            #Link: https://drive.google.com/drive/u/1/folders/1dkW1wKBWvSY4i-XEuQFFBj242p0VdUlM
+            gadm_shapes="resources/" + RDIR + "shapes/gadm_shapes.geojson",
+        output:
+            regions_onshore="resources/" + RDIR + "bus_regions/regions_onshore.geojson",
+            regions_offshore="resources/" + RDIR + "bus_regions/regions_offshore.geojson",
+        log:
+            "logs/" + RDIR + "build_bus_regions.log",
+        benchmark:
+            "benchmarks/" + RDIR + "build_bus_regions"
+        threads: 1
+        resources:
+            mem_mb=1000,
+        script:
+            "scripts/build_bus_regions.py"
 
 
 def terminate_if_cutout_exists(w):
