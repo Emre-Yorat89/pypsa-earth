@@ -159,6 +159,12 @@ rule dist_clean_earth_osm_data:
         "scripts/dist_clean_earth_osm_data.py"
 
 
+if config.get("mode") != "brown_field":
+    rule empty_osm_generators:
+        output:
+            touch("resources/" + RDIR + "osm/clean/all_clean_generators.csv")
+
+
 if config.get("mode") == "brown_field":
 
     rule dist_clean_osm_data:
