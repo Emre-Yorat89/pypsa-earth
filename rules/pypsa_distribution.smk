@@ -7,8 +7,8 @@ rule dist_ramp_build_demand_profile:
     input:
         user_description="data/ramp/{user_type}.xlsx",
     output:
-        daily_demand_profiles="resources/ramp/daily_demand_{user_type}.xlsx",
-        daily_type_demand_profile="resources/ramp/daily_type_demand_{user_type}.xlsx",
+        daily_demand_profiles="resources/" + RDIR + "ramp/daily_demand_{user_type}.xlsx",
+        daily_type_demand_profile="resources/" + RDIR + "ramp/daily_type_demand_{user_type}.xlsx",
     log:
         "logs/ramp_build_demand_profile_{user_type}.log",
     benchmark:
@@ -27,15 +27,15 @@ rule dist_build_demand:
         build_demand_model=config["build_demand_type"],
     input:
         **{
-            f"profile_{user_file.stem}": f"resources/ramp/daily_type_demand_{user_file.stem}.xlsx"
+            f"profile_{user_file.stem}": "resources/" + RDIR + f"ramp/daily_type_demand_{user_file.stem}.xlsx"
             for user_file in Path("data/ramp/").glob("[a-zA-Z0-9]*.xlsx")
         },
         sample_profile=PROFILE,
-        building_csv="resources/buildings/buildings_type.csv",
-        microgrid_shapes="resources/shapes/microgrid_shapes.geojson",
-        clusters_with_buildings="resources/buildings/cluster_with_buildings.geojson",
+        building_csv="resources/" + RDIR + "buildings/buildings_type.csv",
+        microgrid_shapes="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
+        clusters_with_buildings="resources/" + RDIR + "buildings/cluster_with_buildings.geojson",
     output:
-        electric_load="resources/demand/microgrid_load.csv",
+        electric_load="resources/" + RDIR + "demand/microgrid_load.csv",
     log:
         "logs/dist_build_demand.log",
     benchmark:
@@ -51,8 +51,8 @@ rule dist_build_shapes:
     params:
         countries=config["countries"],
     output:
-        microgrid_shapes="resources/shapes/microgrid_shapes.geojson",
-        microgrid_bus_shapes="resources/shapes/microgrid_bus_shapes.geojson",
+        microgrid_shapes="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
+        microgrid_bus_shapes="resources/" + RDIR + "shapes/microgrid_bus_shapes.geojson",
     log:
         "logs/dist_build_shapes.log",
     benchmark:
@@ -71,11 +71,11 @@ if config.get("mode") != "brown_field":
             crs=config["crs"],
             house_area_limit=config["house_area_limit"],
         input:
-            buildings_geojson="resources/buildings/microgrid_building.geojson",
+            buildings_geojson="resources/" + RDIR + "buildings/microgrid_building.geojson",
         output:
-            clusters="resources/buildings/clustered_buildings.geojson",
-            clusters_with_buildings="resources/buildings/cluster_with_buildings.geojson",
-            buildings_type="resources/buildings/buildings_type.csv",
+            clusters="resources/" + RDIR + "buildings/clustered_buildings.geojson",
+            clusters_with_buildings="resources/" + RDIR + "buildings/cluster_with_buildings.geojson",
+            buildings_type="resources/" + RDIR + "buildings/buildings_type.csv",
         log:
             "logs/dist_cluster_buildings.log",
         benchmark:
@@ -88,8 +88,8 @@ if config.get("mode") != "brown_field":
 
     rule dist_create_network:
         input:
-            clusters="resources/buildings/clustered_buildings.geojson",
-            load="resources/demand/microgrid_load.csv",
+            clusters="resources/" + RDIR + "buildings/clustered_buildings.geojson",
+            load="resources/" + RDIR + "demand/microgrid_load.csv",
         output:
             "networks/" + RDIR + "base.nc",
         log:
@@ -133,9 +133,9 @@ if config["enable"].get("download_osm_buildings", True):
 rule dist_clean_earth_osm_data:
     input:
         all_buildings="resources/" + RDIR + "osm/raw/all_raw_buildings.geojson",
-        microgrid_shapes="resources/shapes/microgrid_shapes.geojson",
+        microgrid_shapes="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
     output:
-        microgrid_building="resources/buildings/microgrid_building.geojson",
+        microgrid_building="resources/" + RDIR + "buildings/microgrid_building.geojson",
     log:
         "logs/dist_clean_earth_osm_data.log",
     benchmark:
@@ -158,9 +158,9 @@ if config.get("mode") == "brown_field":
             generators="resources/" + RDIR + "osm/raw/all_raw_generators.geojson",
             lines="resources/" + RDIR + "osm/raw/all_raw_lines.geojson",
             substations="resources/" + RDIR + "osm/raw/all_raw_substations.geojson",
-            country_shapes="resources/shapes/microgrid_shapes.geojson",
-            offshore_shapes="resources/shapes/offshore_shapes.geojson",
-            africa_shape="resources/shapes/africa_shape.geojson",
+            country_shapes="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
+            offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
+            africa_shape="resources/" + RDIR + "shapes/africa_shape.geojson",
         output:
             generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
             generators_csv="resources/" + RDIR + "osm/clean/all_clean_generators.csv",
@@ -210,9 +210,9 @@ if config.get("mode") == "brown_field":
             + RDIR
             + "base_network/all_buses_build_network.csv",
         output:
-            clusters="resources/buildings/clustered_buildings.geojson",
-            clusters_with_buildings="resources/buildings/cluster_with_buildings.geojson",
-            buildings_type="resources/buildings/buildings_type.csv",
+            clusters="resources/" + RDIR + "buildings/clustered_buildings.geojson",
+            clusters_with_buildings="resources/" + RDIR + "buildings/cluster_with_buildings.geojson",
+            buildings_type="resources/" + RDIR + "buildings/buildings_type.csv",
         log:
             "logs/dist_cluster_buildings.log",
         benchmark:
@@ -262,8 +262,8 @@ if config.get("mode") == "brown_field":
             crs=config["crs"],
             countries=config["countries"],
         input:
-            country_shapes="resources/shapes/microgrid_shapes.geojson",
-            offshore_shapes="resources/shapes/offshore_shapes.geojson",
+            country_shapes="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
+            offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
             base_network="networks/" + RDIR + "base.nc",
             #gadm_shapes="resources/" + RDIR + "shapes/MAR2.geojson",
             #using this line instead of the following will test updated gadm shapes for MA.
@@ -288,12 +288,12 @@ if config.get("mode") == "brown_field":
     rule dist_filter_data:
         input:
             **{
-                f"profile_{tech}": f"resources/renewable_profiles/profile_{tech}.nc"
+                f"profile_{tech}": "resources/" + RDIR + f"renewable_profiles/profile_{tech}.nc"
                 for tech in config["tech_modelling"]["general_vre"]
             },
-            base_network="networks/base.nc",
-            raw_lines="resources/osm/clean/all_clean_lines.geojson",
-            shape="resources/shapes/microgrid_shapes.geojson",
+            base_network="networks/" + RDIR + "base.nc",
+            raw_lines="resources/" + RDIR + "osm/clean/all_clean_lines.geojson",
+            shape="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
         output:
             base_update="networks/" + RDIR + "base_update.nc",
         log:
@@ -314,16 +314,14 @@ rule dist_build_renewable_profiles:
         countries=config["countries"],
         alternative_clustering=config["cluster_options"]["alternative_clustering"],
     input:
-        natura="resources/natura.tiff",
-        copernicus=
-            "data/copernicus/PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif"
-        ,
+        natura="resources/" + RDIR + "natura.tiff",
+        copernicus="data/copernicus/PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif",
         gebco="data/gebco/GEBCO_2025_sub_ice.nc",
-        country_shapes="resources/shapes/microgrid_shapes.geojson",
-        offshore_shapes="resources/shapes/offshore_shapes.geojson",
+        country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
+        offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
         hydro_capacities="pypsa-earth/data/hydro_capacities.csv",
         eia_hydro_generation="pypsa-earth/data/eia_hydro_annual_generation.csv",
-        powerplants="resources/powerplants.csv",
+        powerplants="resources/" + RDIR + "powerplants.csv",
         regions=(
             (
                 lambda w: (
@@ -333,13 +331,13 @@ rule dist_build_renewable_profiles:
                 )
             )
             if config.get("mode") == "brown_field"
-            else "resources/shapes/microgrid_bus_shapes.geojson"
+            else "resources/" + RDIR + "shapes/microgrid_bus_shapes.geojson"
         ),
         cutout=lambda w: 
             "cutouts/" + config["renewable"][w.technology]["cutout"] + ".nc"
         ,
     output:
-        profile="resources/renewable_profiles/profile_{technology}.nc",
+        profile="resources/" + RDIR + "renewable_profiles/profile_{technology}.nc",
     log:
         "logs/build_renewable_profile_{technology}.log",
     benchmark:
@@ -356,19 +354,19 @@ rule dist_add_electricity:
         mode=config["mode"],
     input:
         **{
-            f"profile_{tech}": f"resources/renewable_profiles/profile_{tech}.nc"
+            f"profile_{tech}": "resources/" + RDIR + f"renewable_profiles/profile_{tech}.nc"
             for tech in config["tech_modelling"]["general_vre"]
         },
         create_network=(
-            "networks/base_update.nc"
+            "networks/" + RDIR + "base_update.nc"
             if config.get("mode") == "brown_field"
-            else "networks/base.nc"
+            else "networks/" + RDIR + "base.nc"
         ),
         tech_costs=COSTS,
-        load_file="resources/demand/microgrid_load.csv",
-        powerplants="resources/powerplants.csv",
+        load_file="resources/" + RDIR + "demand/microgrid_load.csv",
+        powerplants="resources/" + RDIR + "powerplants.csv",
     output:
-        "networks/elec.nc",
+        "networks/" + RDIR + "elec.nc",
     log:
         "logs/dist_add_electricity.log",
     benchmark:
@@ -382,9 +380,9 @@ rule dist_add_electricity:
 
 rule dist_solve_network:
     input:
-        "networks/elec.nc",
+        "networks/" + RDIR + "elec.nc",
     output:
-        "networks/results/elec.nc",
+        "networks/" + RDIR + "results/elec.nc",
     log:
         "logs/dist_solve_network.log",
     benchmark:
