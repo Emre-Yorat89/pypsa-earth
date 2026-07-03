@@ -66,6 +66,18 @@ rule dist_build_shapes:
 
 if config.get("mode") != "brown_field":
 
+    rule copy_bus_regions:
+        input: "resources/" + RDIR + "shapes/microgrid_bus_shapes.geojson"
+        output:
+            regions_onshore="resources/" + RDIR + "bus_regions/regions_onshore.geojson",
+            regions_offshore="resources/"
+            + RDIR
+            + "bus_regions/regions_offshore.geojson",
+        run:
+            import shutil
+            shutil.copyfile(input[0], output["regions_onshore"])
+            shutil.copyfile(input[0], output["regions_offshore"])
+
     rule dist_cluster_buildings:
         params:
             crs=config["crs"],
