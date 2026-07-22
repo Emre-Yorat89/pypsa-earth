@@ -178,7 +178,9 @@ if config.get("mode") == "brown_field":
             substations="resources/" + RDIR + "osm/raw/all_raw_substations.geojson",
             country_shapes="resources/" + RDIR + "shapes/microgrid_shapes.geojson",
             offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
-            africa_shape="resources/" + RDIR + "shapes/africa_shape.geojson",
+            extended_country_shape="resources/"
+            + RDIR
+            + "shapes/extended_country_shape.geojson",
         output:
             generators="resources/" + RDIR + "osm/clean/all_clean_generators.geojson",
             generators_csv="resources/" + RDIR + "osm/clean/all_clean_generators.csv",
