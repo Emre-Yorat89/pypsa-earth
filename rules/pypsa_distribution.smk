@@ -341,7 +341,7 @@ rule dist_build_renewable_profiles:
         offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
         hydro_capacities="pypsa-earth/data/hydro_capacities.csv",
         eia_hydro_generation="pypsa-earth/data/eia_hydro_annual_generation.csv",
-        powerplants="resources/" + RDIR + "powerplants.csv",
+        powerplants="resources/" + RDIR + "dist_powerplants.csv",
         regions=(
             (
                 lambda w: (
@@ -384,7 +384,7 @@ rule dist_add_electricity:
         ),
         tech_costs=COSTS,
         load_file="resources/" + RDIR + "demand/microgrid_load.csv",
-        powerplants="resources/" + RDIR + "powerplants.csv",
+        powerplants="resources/" + RDIR + "dist_powerplants.csv",
     output:
         "networks/" + RDIR + "elec.nc",
     log:
