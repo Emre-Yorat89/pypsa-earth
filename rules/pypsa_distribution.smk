@@ -341,7 +341,7 @@ rule dist_build_renewable_profiles:
         offshore_shapes="resources/" + RDIR + "shapes/offshore_shapes.geojson",
         hydro_capacities="pypsa-earth/data/hydro_capacities.csv",
         eia_hydro_generation="pypsa-earth/data/eia_hydro_annual_generation.csv",
-        powerplants="resources/" + RDIR + "dist_powerplants.csv",
+        powerplants="data/dist_powerplants.csv",
         regions=(
             (
                 lambda w: (
