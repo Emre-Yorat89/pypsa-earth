@@ -384,7 +384,7 @@ rule dist_add_electricity:
         ),
         tech_costs=COSTS,
         load_file="resources/" + RDIR + "demand/microgrid_load.csv",
-        powerplants="resources/" + RDIR + "dist_powerplants.csv",
+        powerplants="data/dist_powerplants.csv",
     output:
         "networks/" + RDIR + "elec.nc",
     log:
