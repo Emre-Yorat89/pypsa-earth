@@ -278,7 +278,7 @@ if config.get("mode") == "brown_field":
 
     rule dist_build_bus_regions:
         params:
-            alternative_clustering=config["cluster_options"]["alternative_clustering"],
+            alternative_clustering=config["clustering"]["alternative_clustering"],
             crs=config["crs"],
             countries=config["countries"],
         input:
@@ -332,7 +332,7 @@ rule dist_build_renewable_profiles:
         crs=config["crs"],
         renewable=config["renewable"],
         countries=config["countries"],
-        alternative_clustering=config["cluster_options"]["alternative_clustering"],
+        alternative_clustering=config["clustering"]["alternative_clustering"],
     input:
         natura="resources/" + RDIR + "natura.tiff",
         copernicus="data/copernicus/PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif",
