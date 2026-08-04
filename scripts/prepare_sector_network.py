@@ -181,16 +181,16 @@ Relevant Settings
 Inputs
 ------
 
-- ``resources/{SECDIR}/demand/transport_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Transport demand per node and carrier for transport sectors (road, rail, aviation, shipping) if enabled.
-- ``resources/{SECDIR}/pattern_profiles/avail_profile_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Availability profiles for the transport sector if enabled.
-- ``resources/{SECDIR}/pattern_profiles/dsm_profile_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Demand-side management profiles for the transport sector if enabled.
-- ``resources/{SECDIR}/demand/nodal_transport_data_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Nodal transport demand data for transport sectors if enabled.
+- ``resources/{SECDIR}/demand/transport_s{simpl}_{clusters}_{planning_horizons}.csv``: Transport demand per node and carrier for transport sectors (road, rail, aviation, shipping) if enabled.
+- ``resources/{SECDIR}/pattern_profiles/avail_profile_s{simpl}_{clusters}_{planning_horizons}.csv``: Availability profiles for the transport sector if enabled.
+- ``resources/{SECDIR}/pattern_profiles/dsm_profile_s{simpl}_{clusters}_{planning_horizons}.csv``: Demand-side management profiles for the transport sector if enabled.
+- ``resources/{SECDIR}/demand/nodal_transport_data_s{simpl}_{clusters}_{planning_horizons}.csv``: Nodal transport demand data for transport sectors if enabled.
 
-- ``resources/{SECDIR}/demand/heat/heat_demand_{demand}_s{simpl}_{clusters}_{planning_horizons}_{demand}.csv``: Heat demand per node for heat sector if enabled.
-- ``resources/{SECDIR}/demand/heat/ashp_cop_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Coefficient of performance for air source heat pumps for heat sector if enabled.
-- ``resources/{SECDIR}/demand/heat/gshp_cop_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Coefficient of performance for ground source heat pumps for heat sector if enabled.
-- ``resources/{SECDIR}/demand/heat/solar_thermal_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Solar thermal availability profiles for heat sector if enabled.
-- ``resources/{SECDIR}/demand/heat/district_heat_share_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: District heat share per node for heat sector if enabled.
+- ``resources/{SECDIR}/demand/heat/heat_demand_s{simpl}_{clusters}_{planning_horizons}.csv``: Heat demand per node for heat sector if enabled.
+- ``resources/{SECDIR}/demand/heat/ashp_cop_s{simpl}_{clusters}_{planning_horizons}.csv``: Coefficient of performance for air source heat pumps for heat sector if enabled.
+- ``resources/{SECDIR}/demand/heat/gshp_cop_s{simpl}_{clusters}_{planning_horizons}.csv``: Coefficient of performance for ground source heat pumps for heat sector if enabled.
+- ``resources/{SECDIR}/demand/heat/solar_thermal_s{simpl}_{clusters}_{planning_horizons}.csv``: Solar thermal availability profiles for heat sector if enabled.
+- ``resources/{SECDIR}/demand/heat/district_heat_share_s{simpl}_{clusters}_{planning_horizons}.csv``: District heat share per node for heat sector if enabled.
 
 - ``resources/{RDIR}/solar_rooftop/solar_rooftop_layout_elec_s{simpl}_{clusters}_{country}.csv``: Solar rooftop layout per country if enabled.
 
@@ -200,13 +200,13 @@ Inputs
 
 - ``data/hydrogen_salt_cavern_potentials.csv``: Hydrogen salt cavern potentials per country.
 
-- ``resources/{SECDIR}/demand/heat/nodal_energy_heat_totals_{demand}_s{simpl}_{clusters}_{planning_horizons}.csv``: Nodal energy totals if rail transport or agriculture sector is enabled.
+- ``resources/{SECDIR}/demand/heat/nodal_energy_heat_totals_s{simpl}_{clusters}_{planning_horizons}.csv``: Nodal energy totals if rail transport or agriculture sector is enabled.
 
 - ``resources/{SECDIR}/population_shares/pop_layout_elec_s{simpl}_{clusters}_{planning_horizons}.csv``: Population layout per node.
 
-- ``resources/{SECDIR}/demand/industrial_energy_demand_per_node_elec_s{simpl}_{clusters}_{planning_horizons}_{demand}.csv``: Industrial energy demand per node if industry sector is enabled.
+- ``resources/{SECDIR}/demand/industrial_energy_demand_per_node_elec_s{simpl}_{clusters}_{planning_horizons}.csv``: Industrial energy demand per node if industry sector is enabled.
 
-- ``resources/{SECDIR}/energy_totals_{demand}_{planning_horizons}.csv``: Energy totals per sector
+- ``resources/{SECDIR}/energy_totals_{planning_horizons}.csv``: Energy totals per sector
 
 - ``resources/{SECDIR}/airports.csv``: Airport locations if aviation sector is enabled.
 
@@ -220,7 +220,7 @@ Inputs
 
 Outputs
 -------
-- ``{RESDIR}/prenetworks/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{sopts}_{planning_horizons}_{discountrate}_{demand}.nc``: Prepared network file after adding sectoral technologies,
+- ``{RESDIR}/prenetworks/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{sopts}_{planning_horizons}_{discountrate}.nc``: Prepared network file after adding sectoral technologies,
 
 
 Description
@@ -243,6 +243,7 @@ Add sector based technologies to the PyPSA network, including:
 import logging
 import os
 import re
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -304,7 +305,9 @@ def add_carrier_buses(n: pypsa.Network, carrier: str, nodes: list = None) -> Non
     n.madd("Bus", nodes, location=location, carrier=carrier)
 
     # initial fossil reserves
-    e_initial = (snakemake.params.fossil_reserves).get(carrier, 0) * 1e6
+    e_initial = (
+        snakemake.params.sector_options.get(carrier, {}).get("reserves", 0)
+    ) * 1e6
     # capital cost could be corrected to e.g. 0.2 EUR/kWh * annuity and O&M
     n.madd(
         "Store",
@@ -315,7 +318,6 @@ def add_carrier_buses(n: pypsa.Network, carrier: str, nodes: list = None) -> Non
         carrier=carrier,
         e_initial=e_initial,
     )
-
     n.madd(
         "Generator",
         nodes,
@@ -707,10 +709,29 @@ def add_hydrogen(n: pypsa.Network, costs: pd.DataFrame) -> None:
         lifetime=costs.at["fuel cell", "lifetime"],
     )
 
-    cavern_nodes = pd.DataFrame()
+    if snakemake.params.sector_options["hydrogen"].get("h2_turbine", False):
+        # Assumption:
+        # Hydrogen turbines are approximated using OCGT techno-economic parameters,
+        # as both represent open-cycle gas turbines.
+        # This is a proxy due to limited data availability for dedicated H2 turbines (didn't find suitable in technology data).
+        # TODO: Update with dedicated H2 turbine parameters when available.
+        n.madd(
+            "Link",
+            spatial.nodes + " H2 turbine",
+            bus0=spatial.nodes + " H2",
+            bus1=spatial.nodes,
+            p_nom_extendable=True,
+            carrier="H2 turbine",
+            efficiency=costs.at["OCGT", "efficiency"],
+            capital_cost=costs.at["OCGT", "fixed"]
+            * costs.at["OCGT", "efficiency"],  # NB: fixed cost is per MWel
+            marginal_cost=costs.at["OCGT", "VOM"],
+            lifetime=costs.at["OCGT", "lifetime"],
+        )
 
-    if snakemake.params.sector_options["hydrogen"]["underground_storage"]:
+    if snakemake.params.sector_options["hydrogen"]["underground_storage"]["enabled"]:
         if snakemake.params.h2_underground:
+            cavern_nodes = pd.DataFrame()
             custom_cavern = read_csv_nafix(
                 os.path.join(
                     BASE_DIR,
@@ -734,116 +755,49 @@ def add_hydrogen(n: pypsa.Network, costs: pd.DataFrame) -> None:
             # n.add("Carrier", "H2 UHS")
 
             n.madd(
-                "Bus",
-                spatial.nodes + " H2 UHS",
-                location=spatial.nodes,
-                carrier="H2 UHS",
-                x=n.buses.loc[list(spatial.nodes)].x.values,
-                y=n.buses.loc[list(spatial.nodes)].y.values,
-            )
-
-            n.madd(
                 "Store",
                 cavern_nodes.index + " H2 UHS",
-                bus=cavern_nodes.index + " H2 UHS",
+                bus=cavern_nodes.index + " H2",
                 e_nom_extendable=True,
                 e_nom_max=h2_pot.values,
                 e_cyclic=True,
                 carrier="H2 UHS",
                 capital_cost=h2_capital_cost,
-            )
-
-            n.madd(
-                "Link",
-                spatial.nodes + " H2 UHS charger",
-                bus0=spatial.nodes + " H2",
-                bus1=spatial.nodes + " H2 UHS",
-                carrier="H2 UHS charger",
-                # efficiency=costs.at["battery inverter", "efficiency"] ** 0.5,
-                # capital_cost=costs.at["battery inverter", "fixed"],
-                p_nom_extendable=True,
-                # lifetime=costs.at["battery inverter", "lifetime"],
-            )
-
-            n.madd(
-                "Link",
-                spatial.nodes + " H2 UHS discharger",
-                bus0=spatial.nodes + " H2 UHS",
-                bus1=spatial.nodes + " H2",
-                carrier="H2 UHS discharger",
-                efficiency=1,
-                # capital_cost=costs.at["battery inverter", "fixed"],
-                p_nom_extendable=True,
-                # lifetime=costs.at["battery inverter", "lifetime"],
+                lifetime=costs.at["hydrogen storage underground", "lifetime"],
             )
 
         else:
-            h2_salt_cavern_potential = read_csv_nafix(
-                snakemake.input.h2_cavern, index_col=0
-            ).squeeze()
-            h2_cavern_ct = h2_salt_cavern_potential[~h2_salt_cavern_potential.isna()]
-            cavern_nodes = n.buses[n.buses.country.isin(h2_cavern_ct.index)]
+            cavern_types = snakemake.params.sector_options["hydrogen"][
+                "underground_storage"
+            ]["locations"]
+            h2_caverns = read_csv_nafix(snakemake.input.h2_cavern, index_col=0)
+            if not h2_caverns.empty and set(cavern_types).intersection(
+                h2_caverns.columns
+            ):
+                available_caverns = [c for c in cavern_types if c in h2_caverns.columns]
+                h2_caverns = h2_caverns[available_caverns].sum(axis=1)
 
-            h2_capital_cost = costs.at["hydrogen storage underground", "fixed"]
+                # only use sites with at least 2 TWh potential
+                h2_caverns = h2_caverns[h2_caverns > 2]
 
-            # assumptions: weight storage potential in a country by population
-            # TODO: fix with real geographic potentials
-            # convert TWh to MWh with 1e6
-            h2_pot = h2_cavern_ct.loc[cavern_nodes.country]
-            h2_pot.index = cavern_nodes.index
+                # convert TWh to MWh
+                h2_caverns = h2_caverns * 1e6
 
-            # distribute underground potential equally over all nodes #TODO change with real data
-            s = pd.Series(h2_pot.index, index=h2_pot.index)
-            country_codes = s.str[:2]
-            code_counts = country_codes.value_counts()
-            fractions = country_codes.map(code_counts).rdiv(1)
-            h2_pot = h2_pot * fractions * 1e6
+                logger.info("Add hydrogen underground storage")
 
-            # n.add("Carrier", "H2 UHS")
+                h2_capital_cost = costs.at["hydrogen storage underground", "fixed"]
 
-            n.madd(
-                "Bus",
-                spatial.nodes + " H2 UHS",
-                location=spatial.nodes,
-                carrier="H2 UHS",
-                x=n.buses.loc[list(spatial.nodes)].x.values,
-                y=n.buses.loc[list(spatial.nodes)].y.values,
-            )
-
-            n.madd(
-                "Store",
-                cavern_nodes.index + " H2 UHS",
-                bus=cavern_nodes.index + " H2 UHS",
-                e_nom_extendable=True,
-                e_nom_max=h2_pot.values,
-                e_cyclic=True,
-                carrier="H2 UHS",
-                capital_cost=h2_capital_cost,
-            )
-
-            n.madd(
-                "Link",
-                spatial.nodes + " H2 UHS charger",
-                bus0=spatial.nodes,
-                bus1=spatial.nodes + " H2 UHS",
-                carrier="H2 UHS charger",
-                # efficiency=costs.at["battery inverter", "efficiency"] ** 0.5,
-                capital_cost=0,
-                p_nom_extendable=True,
-                # lifetime=costs.at["battery inverter", "lifetime"],
-            )
-
-            n.madd(
-                "Link",
-                spatial.nodes + " H2 UHS discharger",
-                bus0=spatial.nodes,
-                bus1=spatial.nodes + " H2 UHS",
-                carrier="H2 UHS discharger",
-                efficiency=1,
-                capital_cost=0,
-                p_nom_extendable=True,
-                # lifetime=costs.at["battery inverter", "lifetime"],
-            )
+                n.madd(
+                    "Store",
+                    h2_caverns.index + " H2 UHS",
+                    bus=h2_caverns.index + " H2",
+                    e_nom_extendable=True,
+                    e_nom_max=h2_caverns.values,
+                    e_cyclic=True,
+                    carrier="H2 UHS",
+                    capital_cost=h2_capital_cost,
+                    lifetime=costs.at["hydrogen storage underground", "lifetime"],
+                )
 
     # hydrogen stored overground (where not already underground)
     h2_capital_cost = costs.at[
@@ -935,22 +889,21 @@ def add_hydrogen(n: pypsa.Network, costs: pd.DataFrame) -> None:
 
         # Order buses to detect equal pairs for bidirectional pipelines
         # buses_ordered = h2_links.apply(lambda p: sorted([p.bus0, p.bus1]), axis=1)
-
-        # Appending string for carrier specification '_AC'
-        # h2_links["bus0"] = buses_ordered.str[0] + "_AC"
-        # h2_links["bus1"] = buses_ordered.str[1] + "_AC"
-
-        # Create index column
-        h2_links["buses_idx"] = (
-            "H2 pipeline " + h2_links["bus0"] + " -> " + h2_links["bus1"]
-        )
-
-        # Aggregate pipelines applying mean on length and sum on capacities
-        h2_links = h2_links.groupby("buses_idx").agg(
-            {"bus0": "first", "bus1": "first", "length": "mean", "capacity": "sum"}
-        )
-
         if len(h2_links) > 0:
+            # Appending string for carrier specification '_AC', because hydrogen has _AC in bus names
+            # h2_links["bus0"] = buses_ordered.str[0] + "_AC"
+            # h2_links["bus1"] = buses_ordered.str[1] + "_AC"
+
+            # Create index column
+            h2_links["buses_idx"] = (
+                "H2 pipeline " + h2_links["bus0"] + " -> " + h2_links["bus1"]
+            )
+
+            # Aggregate pipelines applying mean on length and sum on capacities
+            h2_links = h2_links.groupby("buses_idx").agg(
+                {"bus0": "first", "bus1": "first", "length": "mean", "capacity": "sum"}
+            )
+
             if snakemake.params.sector_options["hydrogen"]["gas_network_repurposing"]:
                 add_links_repurposed_H2_pipelines()
             if (
@@ -3919,7 +3872,6 @@ if __name__ == "__main__":
             planning_horizons="2030",
             sopts="144H",
             discountrate=0.071,
-            demand="AB",
         )
 
     # Load population layout
@@ -3956,7 +3908,7 @@ if __name__ == "__main__":
 
     # Fetch wildcards
     investment_year = int(snakemake.wildcards.planning_horizons[-4:])
-    demand_sc = snakemake.wildcards.demand  # loading the demand scenario wildcard
+    demand_sc = snakemake.params.demand_scenario
 
     # Prepare the costs dataframe
     costs = read_csv_nafix(snakemake.input.costs, index_col=0)
