@@ -64,7 +64,7 @@ logger = create_logger(__name__)
 CUTOUT_CRS = "EPSG:4326"
 
 
-def get_relevant_regions(country_shapes, offshore_shapes, natura_crs, buffer):
+def get_relevant_regions(country_shapes, offshore_shapes, natura_crs, buffer, tutorial):
     """
     Merge the country_shapes and the offshore_shapes into one GeoDataFrame.
     Additionally add a buffer to ensure all relevant regions are included.
@@ -81,6 +81,8 @@ def get_relevant_regions(country_shapes, offshore_shapes, natura_crs, buffer):
 
     # load offshore shapes
     offshore_gdf = gpd.read_file(offshore_shapes).to_crs(natura_crs)
+    if tutorial == True:
+        offshore_gdf = offshore_gdf.make_valid()
     offshore = offshore_gdf.geometry.union_all()
 
     # combine countries and offshore regions into one merged geometry
@@ -202,10 +204,11 @@ if __name__ == "__main__":
     window_size = snakemake.params.natura["window_size"]
     buffer_size = snakemake.params.natura["buffer_size"]
     disable_progress = snakemake.params.disable_progress
-
+    tutorial = snakemake.params.tutorial
+    
     if natura_size == "countries":
         regions = get_relevant_regions(
-            country_shapes, offshore_shapes, natura_crs, buffer_size
+            country_shapes, offshore_shapes, natura_crs, buffer_size, tutorial
         )
     else:
         regions = None

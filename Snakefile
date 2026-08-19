@@ -265,6 +265,7 @@ rule build_shapes:
         crs=config["crs"],
         countries=config["countries"],
         subregion=config["subregion"],
+        tutorial=config["tutorial"],
     input:
         # naturalearth='data/bundle/naturalearth/ne_10m_admin_0_countries.shp',
         # eez='data/bundle/eez/World_EEZ_v8_2014.shp',
@@ -460,6 +461,7 @@ if config["enable"].get("build_natura_raster", False):
             area_crs=config["crs"]["area_crs"],
             natura=config["natura"],
             disable_progress=not config["enable"]["progress_bar"],
+            tutorial=config["tutorial"],
         input:
             shapefiles_land="data/landcover",
             cutouts=expand(
