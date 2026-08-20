@@ -1,28 +1,19 @@
-# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+# SPDX-FileCopyrightText: : 2019-2021 The PyPSA-Eur Authors
 #
 # SPDX-License-Identifier: CC0-1.0
 
-# MkDocs and theme
-mkdocs>=1.5.0, <2.0.0
-mkdocs-material>=9.5.0
-mkdocs-git-revision-date-localized-plugin
-mkdocs-table-reader-plugin
-mkdocs-video
-mkdocstrings[python]>=0.24.0
-mkdocs-autorefs
-mkdocstrings-python
-mkdocs-redirects
-pymdown-extensions
+setuptools
 
-pypsa >=0.25, <=0.30
-vresutils>=0.3.1
-powerplantmatching>=0.5.19
-atlite>=0.4.1
-dask[distributed]
-matplotlib
-tabula-py
+sphinx
+sphinx_rtd_theme
+setuptools<58.3.0
 
-cartopy
+pypsa
+powerplantmatching>=0.4.8
+atlite>=0.2.2
+dask<=2021.3.1
+
+# cartopy
 scikit-learn
 pycountry
 pyyaml
@@ -31,22 +22,8 @@ memory_profiler
 tables
 descartes
 
+esy-osm-pbf
+esy-osmfilter
 rioxarray
-googledrivedownloader>=1.1
 
 gitpython
-
-chaospy
-numba
-ruamel.yaml<=0.17.26
-earth-osm>=2.3.post1
-reverse-geocode
-pyDOE2
-graphviz
-
-fake_useragent
-currencyconverter
-
-# DAG generation (snakemake 8+ requires Python 3.12)
-snakemake<8
-pulp>=2.5.0,<2.8.0
