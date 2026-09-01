@@ -81,8 +81,8 @@ databundles:
     category: data
     destination: "data"
     urls:
-      zenodo: https://zenodo.org/records/18032587/files/bundle_tutorial_data_MA.zip?download=1
-      gdrive: https://drive.google.com/file/d/1QvEekIVMQkm4wjFBHSGKFkqehCcXyuaU/view?usp=drive_link
+      zenodo: https://zenodo.org/records/18851102/files/bundle_tutorial_data_MA.zip?download=1
+      # gdrive: https://drive.google.com/file/d/1QvEekIVMQkm4wjFBHSGKFkqehCcXyuaU/view?usp=drive_link
     output:
     - data/gebco/GEBCO_2025_sub_ice.nc
     - data/copernicus/PROBAV_LC100_global_v3.0.1_2019-nrt_Discrete-Classification-map_EPSG-4326.tif
