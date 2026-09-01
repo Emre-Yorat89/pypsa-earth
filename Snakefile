@@ -2,34 +2,34 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-import sys
 import os
+import sys
 import warnings
-import pathlib
 
 sys.path.append("./scripts")
 
+from pathlib import Path
 from shutil import copyfile, move, unpack_archive
 
 from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 
+from _helpers import branch  # Remove if Snakemake >= 8.3.0
 from _helpers import (
+    BASE_DIR,
+    check_config_version,
+    content_retrieve,
+    copy_default_files,
     create_country_list,
     get_last_commit_message,
-    check_config_version,
-    copy_default_files,
     migrate_config,
     update_cutout_config,
-    BASE_DIR,
-    branch,  # Remove if Snakemake >= 8.3.0
 )
 from build_demand_profiles import get_load_paths_gegis
 from retrieve_databundle_light import (
     datafiles_retrivedatabundle,
     get_best_bundles_in_snakemake,
 )
-from pathlib import Path
-
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
 
 HTTP = HTTPRemoteProvider()
 
@@ -37,9 +37,11 @@ copy_default_files()
 
 
 configfile: "config.default.yaml"
+configfile: "configs/plotting.default.yaml"
+configfile: "configs/solving.default.yaml"
 configfile: "configs/bundle_config.yaml"
 configfile: "configs/powerplantmatching_config.yaml"
-#configfile: "configs/config.pypsa-earth.yaml"
+# configfile: "configs/config.pypsa-earth.yaml"
 configfile: "configs/config.distribution.yaml"
 configfile: "config.yaml"
 
@@ -52,6 +54,12 @@ config.update({"git_commit": get_last_commit_message(".")})
 
 # convert country list according to the desired region
 config["countries"] = create_country_list(config["countries"])
+
+print(
+    "The PyPSA meets Earth initiative also supports dedicated regional models. "
+    "See the documentation at "
+    "https://pypsa-earth.readthedocs.io/en/latest/user-guide/customization/basic-setup/"
+)
 
 # create a list of iteration steps, required to solve the experimental design
 # each value is used as wildcard input e.g. solution_{unc}
@@ -71,6 +79,7 @@ RESDIR = config["results_dir"].strip("/") + f"/{SECDIR}"
 ATLITE_NPROCESSES = config["atlite"].get("nprocesses", 4)
 
 PROFILE = "data/sample_profile.csv"
+
 
 wildcard_constraints:
     simpl="[a-zA-Z0-9]*|all",
@@ -177,7 +186,9 @@ if config["enable"].get("download_global_buildings", True):
             "scripts/download_global_buildings.py"
 
 
-if config["enable"].get("download_osm_data", True) and config["enable"].get("disable_distribution_workflow"):
+if config["enable"].get("download_osm_data", True) and config["enable"].get(
+    "disable_distribution_workflow"
+):
 
     rule download_osm_data:
         params:
@@ -194,6 +205,7 @@ if config["enable"].get("download_osm_data", True) and config["enable"].get("dis
             "benchmarks/" + RDIR + "download_osm_data"
         script:
             "scripts/download_osm_data.py"
+
 
 if config["enable"].get("disable_distribution_workflow"):
 
@@ -223,7 +235,6 @@ if config["enable"].get("disable_distribution_workflow"):
         script:
             "scripts/clean_osm_data.py"
 
-
     rule build_osm_network:
         params:
             build_osm_network=config.get("osm", {}).get("build_osm_network", {}),
@@ -236,12 +247,16 @@ if config["enable"].get("disable_distribution_workflow"):
             country_shapes="resources/" + RDIR + "shapes/country_shapes.geojson",
         output:
             lines="resources/" + RDIR + "base_network/all_lines_build_network.csv",
-            converters="resources/" + RDIR + "base_network/all_converters_build_network.csv",
+            converters="resources/"
+            + RDIR
+            + "base_network/all_converters_build_network.csv",
             transformers="resources/"
             + RDIR
             + "base_network/all_transformers_build_network.csv",
             substations="resources/" + RDIR + "base_network/all_buses_build_network.csv",
-            lines_geo="resources/" + RDIR + "base_network/all_lines_build_network.geojson",
+            lines_geo="resources/"
+            + RDIR
+            + "base_network/all_lines_build_network.geojson",
             converters_geo="resources/"
             + RDIR
             + "base_network/all_converters_build_network.geojson",
@@ -322,6 +337,7 @@ def retrieve_subregion(script_name):
         "original_shapes": "resources/" + RDIR + "shapes/country_shapes.geojson",
     }
 
+
 if config["enable"].get("disable_distribution_workflow"):
 
     rule base_network:
@@ -357,7 +373,6 @@ if config["enable"].get("disable_distribution_workflow"):
         script:
             "scripts/base_network.py"
 
-
     rule build_bus_regions:
         params:
             alternative_clustering=config["clustering"]["alternative_clustering"],
@@ -375,7 +390,9 @@ if config["enable"].get("disable_distribution_workflow"):
             gadm_shapes="resources/" + RDIR + "shapes/gadm_shapes.geojson",
         output:
             regions_onshore="resources/" + RDIR + "bus_regions/regions_onshore.geojson",
-            regions_offshore="resources/" + RDIR + "bus_regions/regions_offshore.geojson",
+            regions_offshore="resources/"
+            + RDIR
+            + "bus_regions/regions_offshore.geojson",
         log:
             "logs/" + RDIR + "build_bus_regions.log",
         benchmark:
@@ -532,6 +549,7 @@ rule process_cost_data:
     params:
         costs=config["costs"],
         max_hours=config["electricity"]["max_hours"],
+        storage_techs=config["storage_techs"],
     input:
         network="networks/" + RDIR + "base.nc",
         costs=branch(
@@ -667,6 +685,7 @@ rule build_powerplants:
     script:
         "scripts/build_powerplants.py"
 
+
 if config["enable"].get("disable_distribution_workflow"):
 
     rule add_electricity:
@@ -680,6 +699,7 @@ if config["enable"].get("disable_distribution_workflow"):
             renewable=config["renewable"],
             length_factor=config["lines"]["length_factor"],
             existing_capacities=config["existing_capacities"],
+            battery_techs=config["storage_techs"]["battery"],
         input:
             **{
                 f"profile_{tech}": "resources/"
@@ -886,7 +906,10 @@ if config["augmented_line_connection"].get("add_to_snakefile") == True:
 
 rule add_extra_components:
     params:
+        storage_techs=config["storage_techs"],
         transmission_efficiency=config["sector"]["transmission_efficiency"],
+        electricity=config["electricity"],
+        csp_model=config["renewable"]["csp"]["csp_model"],
     input:
         network="networks/" + RDIR + "elec_s{simpl}_{clusters}.nc",
         tech_costs="resources/" + RDIR + f"costs_{config['costs']['year']}_elec.csv",
@@ -903,6 +926,39 @@ rule add_extra_components:
         "scripts/add_extra_components.py"
 
 
+if config["co2"]["automatic_emission"]["enable"]:
+
+    rule retrieve_emissions:
+        input:
+            HTTP.remote(
+                "https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/EDGAR/datasets/v60_GHG/CO2_excl_short-cycle_org_C/v60_GHG_CO2_excl_short-cycle_org_C_1970_2018.zip",
+                keep_local=True,
+            ),
+        output:
+            edgar_folder=directory("data/co2_emissions/"),
+            edgar_zip="data/co2_emissions/v60_GHG_CO2_excl_short-cycle_org_C_1970_2018.zip",
+            edgar_xlsx="data/co2_emissions/v60_CO2_excl_short-cycle_org_C_1970_2018.xls",
+        log:
+            "logs/" + RDIR + "retrieve_emissions.log",
+        run:
+            move(input[0], output.edgar_zip)
+            unpack_archive(output.edgar_zip, extract_dir=output.edgar_folder)
+
+    rule build_co2_emissions:
+        input:
+            edgar="data/co2_emissions/v60_CO2_excl_short-cycle_org_C_1970_2018.xls",
+        output:
+            emissions="resources/" + RDIR + "co2_emissions_elec_and_heat.csv",
+        log:
+            "logs/" + RDIR + "build_co2_emissions.log",
+        benchmark:
+            "benchmarks/" + RDIR + "build_co2_emissions"
+        resources:
+            mem_mb=2000,
+        script:
+            "scripts/build_co2_emissions.py"
+
+
 rule prepare_network:
     params:
         links=config["links"],
@@ -912,6 +968,10 @@ rule prepare_network:
         co2=config["co2"],
     input:
         "networks/" + RDIR + "elec_s{simpl}_{clusters}_ec.nc",
+        **branch(
+            config["co2"]["automatic_emission"]["enable"],
+            {"emissions": "resources/" + RDIR + "co2_emissions_elec_and_heat.csv"},
+        ),
         tech_costs="resources/" + RDIR + f"costs_{config['costs']['year']}_elec.csv",
     output:
         "networks/" + RDIR + "elec_s{simpl}_{clusters}_ec_l{ll}_{opts}.nc",
@@ -2368,9 +2428,10 @@ rule run_scenario:
     resources:
         mem_mb=5000,
     run:
-        from build_test_configs import create_test_config
-        import yaml
         from subprocess import run
+
+        import yaml
+        from build_test_configs import create_test_config
 
         # get base configuration file from diff config
         with open(input.diff_config) as f:
@@ -2412,6 +2473,7 @@ rule run_all_scenarios:
             ],
         ),
 
+
 if not config["enable"].get("disable_distribution_workflow"):
 
     include: "rules/pypsa_distribution.smk"
@@ -2420,4 +2482,3 @@ if not config["enable"].get("disable_distribution_workflow"):
 # rule clean:
 #     run:
 #         shell("snakemake -j 1 solve_network --delete-all-output")
-
