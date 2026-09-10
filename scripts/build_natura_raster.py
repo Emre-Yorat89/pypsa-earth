@@ -163,6 +163,7 @@ def get_relevant_regions(
 
     # load offshore shapes
     offshore_gdf = gpd.read_file(offshore_shapes).to_crs(natura_crs)
+    offshore_gdf = offshore_gdf.make_valid()
     offshore = offshore_gdf.geometry.union_all()
 
     # combine countries and offshore regions into one merged geometry
