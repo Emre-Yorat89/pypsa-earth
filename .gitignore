@@ -64,6 +64,15 @@ configs/scenarios/config.*.yaml
 !configs/scenarios/config.test.yaml
 !configs/scenarios/config.GH.yaml
 
+# track resources/powerplants.csv
+!resources/powerplants.csv
+!resources/demand/microgrid_load.csv
+
+# track data/ramp/
+!data/ramp/
+!data/ramp/**
+!data/ramp/*.xlsx
+
 # VS Code-related files
 .vscode
 *.code-workspace
@@ -77,4 +86,3 @@ screenlog*
 !data/demand/unsd/paths/Energy_Statistics_Database.xlsx
 site/
 !data/industry/ammonia_plants.csv
-!doc/tutorials/use-cases/figures/*.png
